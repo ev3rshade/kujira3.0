@@ -8,11 +8,23 @@ import {
   StyleSheet,
   TextInput
 } from 'react-native';
+
+import SQLite from 'react-native-sqlite-storage'
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique IDs
 
 export const KanjiListBase = createContext()
+
+
+const db = SQLite.openDatabase({
+        name:'KanjiDB',
+        location:'default',
+    },
+    () => { },
+    error => { console.log(error)}
+)
 
 
 // functions in ListProvider include
