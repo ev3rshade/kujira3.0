@@ -1,15 +1,5 @@
 import React, { useState, useEffect, createContext } from 'react';
-import {
-  View,
-  Text,
-  StatusBar,
-  Button,
-  ScrollView,
-  StyleSheet,
-  TextInput
-} from 'react-native';
 
-import { enablePromise, SQLite } from 'react-native-sqlite-storage'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
@@ -19,17 +9,6 @@ export const KanjiListBase = createContext()
 
 // SQLite stuff
 
-enablePromise(true)
-
-const db = async () => {
-    return SQL.openDatabase({
-        name:"KanjiDB",
-        location:"default",
-    },
-    () => { },
-    (error) => { console.log(error) }
-    )
-}
 
 
 // functions in ListProvider include
@@ -39,17 +18,6 @@ const db = async () => {
     * loadKanjiList
     * */
 export const ListProvider = ({ children }) => {
-    
-    // SQL consts
-    const createTable = () => {
-        db.transaction((tx) => {
-            tx.executeSql(
-                "CREATE TABLE IF NOT EXISTS"
-                + "Kanji Sets"
-                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, KanjiSet TEXT"
-            )
-        })
-    }
     
     const [kanjiList, setKanjiList] = useState([]);
 
@@ -108,7 +76,6 @@ export const ListProvider = ({ children }) => {
     };
   
     useEffect(() => {
-      createTable()
       
       loadKanjiList();
     }, []);

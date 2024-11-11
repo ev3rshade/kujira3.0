@@ -12,6 +12,7 @@ import { ListProvider } from '../../components/kanjiListBase'
 import Draw from './draw';
 import KanjiList from './kanjiList';
 import Practice from './practice';
+import Set from './set';
 
 
 const Tab = createBottomTabNavigator()
@@ -45,8 +46,14 @@ const TabsLayout = () => {
              }}
              />
 
-            
-             
+            <Tab.Screen
+             name='Set'
+             component={ Set }
+             options={{
+                title:'Set'
+             }}
+             />
+              
         </Tab.Navigator>
     </ListProvider>
     

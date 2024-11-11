@@ -20,8 +20,9 @@ export default function App() {
         <Text> Welcome back </Text>
         <TouchableOpacity style={styles.button} onPress={() => {goToScreen("/kanjiList")}}>
 
-          <Link href="/kanjiList" style={{ textAlign:'center', fontSize: 20, color: 'blue' }}> Begin practicing </Link>
+          
         </TouchableOpacity>
+        <Link href="/kanjiList" style={{ textAlign:'center', fontSize: 20, color: 'blue' }}> Begin practicing </Link>
       </View>
     );
 };
