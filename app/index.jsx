@@ -1,9 +1,28 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
+import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { setList, setItem } from '../components/asyncFunctions.jsx'
 
-
-/*import SQLite from 'react-native-sqlite-storage'*/
+const DeckCard = ({
+  deckID,
+  kanjiList,
+  title,
+}) => {
+  return (
+    <View>
+      <TouchableOpacity style={styles.button} onPress={() => {
+        setCurrentKanjiDeck(deckID)
+        goToScreen('(tabs)')
+        }}>
+        <Text>
+          {kanjiList[0]}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
 
 const goToScreen = ({
   screen
@@ -11,19 +30,51 @@ const goToScreen = ({
   router.push({screen});
 }
 
+const getStoredDecks = async () => {
+  try {
+    const IDs = JSON.parse(await AsyncStorage.getItem('mainList'))
+  } catch (e) {
+    console.log(error)
+  }
+}
+
+const clearAppData = async function() {
+  try {
+      await AsyncStorage.setItem('mainList', JSON.stringify(["default"]))
+      await AsyncStorage.setItem('default', {"id": "1", value: "鯨"}) //JSON HERE
+  } catch (error) {
+      console.error('Error clearing app data.');
+  }
+}
+
 export default function App() {
+  //const [deck, setDeck] = useState("")
 
-    return (
-      <View style={styles.container}>
-        <StatusBar/>
-        <Text> Kanji Practice App Day 20 </Text>
-        <Text> Welcome back </Text>
-        <TouchableOpacity style={styles.button} onPress={() => {goToScreen("/kanjiList")}}>
-
-          <Link href="/kanjiList" style={{ textAlign:'center', fontSize: 20, color: 'blue' }}> Begin practicing </Link>
+  const deckIDs = getStoredDecks()
+  
+  return (
+    <View style={styles.container}>
+      <StatusBar/>
+      <Text> Welcome back </Text>
+      <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
+        <TouchableOpacity style={styles.button}>
+          <Text>
+            Begin Practicing
+          </Text>
         </TouchableOpacity>
+      </Link>
+      
+      <View style={{ paddingHorizontal: 16 }}>
+        {deckIDs.length ? (
+          deckIDs.map((deck, index) => (
+            <DeckCard deckID={deck} kanjiList={deck} title={'Deck ' + (index + 1)} key={index}/>
+          ))
+        ) : (
+          <View style={{ height: 100 }} />
+        )}
       </View>
-    );
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
