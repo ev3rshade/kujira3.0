@@ -1,18 +1,14 @@
 import React, { useState, useEffect, createContext } from 'react';
-import {
-  View,
-  Text,
-  StatusBar,
-  Button,
-  ScrollView,
-  StyleSheet,
-  TextInput
-} from 'react-native';
+
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique IDs
 
 export const KanjiListBase = createContext()
+
+// SQLite stuff
+
 
 
 // functions in ListProvider include
@@ -22,6 +18,7 @@ export const KanjiListBase = createContext()
     * loadKanjiList
     * */
 export const ListProvider = ({ children }) => {
+    
     const [kanjiList, setKanjiList] = useState([]);
 
 
@@ -79,6 +76,7 @@ export const ListProvider = ({ children }) => {
     };
   
     useEffect(() => {
+      
       loadKanjiList();
     }, []);
 
