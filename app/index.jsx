@@ -59,6 +59,7 @@ const createDeck = async () => {
 }
 
 export default function App() {
+  //const [deck, setDeck] = useState("")
 
   const deckIDs = getStoredDecks()
   
@@ -83,7 +84,6 @@ export default function App() {
           <View style={{ height: 100 }} />
         )}
       </View>
-      
         <TouchableOpacity style={styles.button2} onPress={() => {createDeck()}}>
           <Text>
             create deck
