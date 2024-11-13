@@ -5,6 +5,11 @@ import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { setList, setItem } from '../components/asyncFunctions.jsx'
 
+import 'react-native-get-random-values'; // import get-random-values to get uuid to work
+import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
+
+
 const DeckCard = ({
   deckID,
   kanjiList,
@@ -33,22 +38,40 @@ const goToScreen = ({
 const getStoredDecks = async () => {
   try {
     const IDs = JSON.parse(await AsyncStorage.getItem('mainList'))
+    return IDs
   } catch (e) {
     console.log(error)
   }
 }
 
-const clearAppData = async function() {
+const setDefault = async function() {
   try {
-      await AsyncStorage.setItem('mainList', JSON.stringify(["default"]))
-      await AsyncStorage.setItem('default', {"id": "1", value: "鯨"}) //JSON HERE
+      await AsyncStorage.setList('default', JSON.stringify([{"id": "1", value: "鯨"}]))
   } catch (error) {
       console.error('Error clearing app data.');
   }
 }
 
+const createDeck = async () => {
+  const promiseLists = getStoredDecks()
+
+  promiseLists.then((value) => {
+    console.log(value)
+    if (value.length === 0 || value.length === 1) {
+      AsyncStorage.setItem('mainList', JSON.stringify([newID]))
+      AsyncStorage.removeItem('default')
+    } else {
+      AsyncStorage.setItem('mainList', JSON.stringify([...deckIDs, newID]))
+    }
+
+  
+  AsyncStorage.setItem('currentList', newID)
+  AsyncStorage.setItem(newID, JSON.stringify([]))
+  goToScreen('/(tabs)')
+  })
+}
+
 export default function App() {
-  //const [deck, setDeck] = useState("")
 
   const deckIDs = getStoredDecks()
   
@@ -73,6 +96,13 @@ export default function App() {
           <View style={{ height: 100 }} />
         )}
       </View>
+      
+        <TouchableOpacity style={styles.button2} onPress={() => {console.log('pressed')}}>
+          <Text>
+            create deck
+          </Text>
+        </TouchableOpacity>
+      
     </View>
   );
 };
@@ -95,6 +125,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#c4d7ff',
     paddingVertical: 10,
     height: 150,
+    width: 150
+  },
+  button2: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'blue',
+    paddingVertical: 10,
+    height: 75,
     width: 150
   },
 });

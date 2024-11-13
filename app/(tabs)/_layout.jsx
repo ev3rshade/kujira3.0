@@ -3,8 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-import SQLite from 'react-native-sqlite-storage'
-
 import { ListProvider } from '../../components/kanjiListBase'
 
 import { fetchList, setList, removeList } from '../../components/asyncFunctions.jsx'

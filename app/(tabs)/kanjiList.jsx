@@ -75,7 +75,7 @@ const KanjiBox = ({
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const EditKanjiList = () => {
 
-  const [currentList, setCurrentList] = useState([{"id": "1", value: "鯨"}])
+  const [currentList, setCurrentList] = useState([])
   const [opened, setOpened] = useState(true)
   //JSON.stringify(fetchList(currentListID)).split(",")
   
