@@ -20,7 +20,7 @@ const Tab = createBottomTabNavigator()
 
 const TabsLayout = () => {
    return (
-      <ListProvider>
+      
          <Tab.Navigator>
             <Tab.Screen
                name='KanjiList'
@@ -55,7 +55,7 @@ const TabsLayout = () => {
                />
                
          </Tab.Navigator>
-      </ListProvider>
+      
       
    )
 }

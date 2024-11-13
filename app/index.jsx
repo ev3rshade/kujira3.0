@@ -1,13 +1,14 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { setList, setItem } from '../components/asyncFunctions.jsx'
+import { setList, setItem, fetchList } from '../components/asyncFunctions.jsx'
 
 import 'react-native-get-random-values'; // import get-random-values to get uuid to work
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
+import { KanjiListBase } from '../components/kanjiListBase.jsx'
 
 
 const DeckCard = ({
@@ -47,8 +48,7 @@ const getStoredDecks = async () => {
 const setDefault = async function() {
   try {
     await AsyncStorage.clear()
-    await setItem('currentList', 'default')
-    await setList('default', JSON.stringify([{"id": "1", value: "鯨"}]))
+    await setList('default', JSON.stringify([{id: 'default', name: 'default', list:["鯨"]}]))
   } catch (error) {
       console.error('Error clearing app data.');
   }
@@ -58,11 +58,22 @@ const createDeck = async () => {
   
 }
 
-export default function App() {
-  //const [deck, setDeck] = useState("")
 
-  const deckIDs = getStoredDecks()
+
+export default function App() {
+  const { data, loading } = useContext( KanjiListBase );
+  console.log("context provided:")
+  console.log(data)
+  //JSON.stringify(fetchList(currentListID)).split(",")
   
+
+  if (loading) {
+    console.log('loading')
+    return (
+      <Text> loading </Text>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar/>
@@ -75,16 +86,17 @@ export default function App() {
         </TouchableOpacity>
       </Link>
       
+      
       <View style={{ paddingHorizontal: 16 }}>
-        {deckIDs.length ? (
-          deckIDs.map((deck, index) => (
-            <DeckCard deckID={deck} kanjiList={deck} title={'Deck ' + (index + 1)} key={index}/>
+        { (typeof data != 'undefined' && data.length) ? (
+          JSON.parse(data).map((deck, index) => (
+            <DeckCard deckID={deck.id} kanjiList={deck.list[0]} title={'Deck ' + (index + 1)} key={index}/>
           ))
         ) : (
           <View style={{ height: 100 }} />
         )}
       </View>
-        <TouchableOpacity style={styles.button2} onPress={() => {createDeck()}}>
+        <TouchableOpacity style={styles.button2} onPress={() => {setDefault()}}>
           <Text>
             create deck
           </Text>

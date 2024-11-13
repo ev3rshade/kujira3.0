@@ -1,87 +1,84 @@
 import React, { useState, useEffect, createContext } from 'react';
-
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique IDs
 
 export const KanjiListBase = createContext()
 
-// SQLite stuff
 
+export const getAllKeys = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    return keys;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getAll = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys()
+    const items = await AsyncStorage.multiGet(keys)
+    console.log('keys: ' + keys)
+    console.log("items: " + items)
+    const mapped = items.map(([key, value]) => value)
+    console.log('mapped ' + mapped)
+    return mapped
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+export const addToStorage = async (value) => {
+  const newID = uuidv4()
+  try {
+    const newItem = {
+      id: newID,
+      value: value,
+    };
+    await AsyncStorage.setItem(
+      newID,
+      JSON.stringify(newItem)
+    );
+    AsyncStorage.getAllKeys()
+    .then((keys)=> AsyncStorage.multiGet(keys)
+    .then((data) => setData(data)))
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 // functions in ListProvider include
-   /* toggleKanji
-    * addKanji
-    * deleteKanji
-    * loadKanjiList
+   /* 
     * */
 export const ListProvider = ({ children }) => {
+    const [data, setData] = useState(getAll())
+    const [loading, setLoading] = useState(true)
+    console.log('data' + data)
+    const [current, setCurrent] = useState('default')
+
     
-    const [kanjiList, setKanjiList] = useState([]);
-
-
-    // async function that updates kanji list
-    const toggleKanji = async (id, key, value) => {
+    const loadAllData = async () => {
       try {
-        const copyArray = kanjiList.map(item =>
-          item.id === id ? { ...item, [key]: value } : item
-        );
-        await AsyncStorage.setItem('kanjiList', JSON.stringify(copyArray));
-        setKanjiList(copyArray);
+        const updatedData = await getAll() || []; // Handle null case
+        setData(updatedData)
       } catch (error) {
         console.log(error);
-      }
-    };
-  
-    //async function that deletes kanji list
-    const deleteKanji = async (id) => {
-      try {
-        const copyArray = kanjiList.filter(item => item.id !== id);
-        await AsyncStorage.setItem('kanjiList', JSON.stringify(copyArray));
-        setKanjiList(copyArray);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    const addKanji = async (item) => {
-
-  
-      try {
-        const newKanjiItem = {
-          id: uuidv4(),
-          name: item,
-          isChecked: false,
-        };
-        await AsyncStorage.setItem(
-          'kanjiList',
-          JSON.stringify([...kanjiList, newKanjiItem])
-        );
-        setKanjiList(kanjiList => [...kanjiList, newKanjiItem]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    const loadKanjiList = async (item) => {
-      try {
-        const kanji = await AsyncStorage.getItem('kanjiList');
-        const currentKanjiList = JSON.parse(kanji) || []; // Handle null case
-        setKanjiList(currentKanjiList);
-      } catch (error) {
-        console.log(error);
+      } finally {
+        setLoading(false)
       }
     };
   
     useEffect(() => {
       
-      loadKanjiList();
+      loadAllData();
     }, []);
 
     return (
-        <KanjiListBase.Provider value={{ kanjiList, toggleKanji, addKanji, deleteKanji, loadKanjiList }}>
+        <KanjiListBase.Provider value={{ data, loading }}>
             { children }
         </KanjiListBase.Provider>
     )

@@ -11,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-
+import { router } from 'expo-router';
 
 
 import 'react-native-get-random-values'; // import get-random-values to get uuid to work
@@ -61,9 +61,6 @@ const KanjiBox = ({
 
 
   async function initialize () {
-    const currentListID = await fetchItem('currentList')
-    console.log('id: ')
-    console.log(currentListID)
     const storedList = await fetchList('default')
     console.log('storedList: ')
     console.log(storedList)

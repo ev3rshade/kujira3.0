@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import {Stack } from 'expo-router';
+import { ListProvider } from '../components/kanjiListBase';
 
 const RootLayout = () => {
     return (
-        <Stack>
-            <Stack.Screen name = "(tabs)" options={{ headerShown: false}} />
-        </Stack>
+        <ListProvider>
+            <Stack>
+                <Stack.Screen name = "(tabs)" options={{ headerShown: false}} />
+            </Stack>
+        </ListProvider>
     )
 }
 

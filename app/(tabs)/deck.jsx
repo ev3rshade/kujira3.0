@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 // custom components
 import AsyncStorage from '@react-native-async-storage/async-storage'; // used to store the current list being rendered from the SQLite database
 
-import { fetchList } from '../../components/asyncFunctions'
+import { fetchList, fetchItem } from '../../components/asyncFunctions'
 
 
 const KanjiBox = ({
@@ -62,9 +62,9 @@ const KanjiBox = ({
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const Deck = () => {
-  const currentListID = JSON.stringify(fetchList('currentList'))
+  const currentListID = JSON.stringify(fetchItem('currentList'))
   const testList = "花,火,大,会"
-  const currentList = JSON.stringify(fetchList(currentListID)).split(",")
+  const currentList = fetchList('default')
 
 
   // screen rendering
