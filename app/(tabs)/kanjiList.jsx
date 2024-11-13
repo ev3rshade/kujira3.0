@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
+import { Stack } from 'expo-router';
 import {
   View,
   Text,
@@ -6,7 +7,8 @@ import {
   Button,
   ScrollView,
   StyleSheet,
-  TextInput
+  TextInput,
+  TouchableOpacity
 } from 'react-native';
 
 
@@ -18,6 +20,8 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 // custom components
 import AsyncStorage from '@react-native-async-storage/async-storage'; // used to store the current list being rendered from the SQLite database
 import { KanjiListBase } from '../../components/kanjiListBase.jsx' // used as a context component to transfer the list being rendered between screens (kanjiList.jjsx <-> practice.jsx)
+
+import { fetchList, fetchItem, setList, setItem, removeList } from '../../components/asyncFunctions.jsx'
 
 
 const KanjiBox = ({
@@ -56,12 +60,34 @@ const KanjiBox = ({
   }
 
 
-
+  async function initialize () {
+    const currentListID = await fetchItem('currentList')
+    console.log('id: ')
+    console.log(currentListID)
+    const storedList = await fetchList('default')
+    console.log('storedList: ')
+    console.log(storedList)
+    return storedList
+  }
 // <<<<<<<<<< COMPONENT THAT'S EXPORTED >>>>>>>>>>>>>
 
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
-const KanjiList = () => {
+const EditKanjiList = () => {
+
+  const [currentList, setCurrentList] = useState([])
+  const [opened, setOpened] = useState(true)
+  //JSON.stringify(fetchList(currentListID)).split(",")
+  
+  
+  if (opened) {
+    const promiseLists = initialize()
+
+    promiseLists.then((value) => {
+      setCurrentList(value)
+    })
+    setOpened(false)
+  }
 
   // const created from the context of the context component
   const {kanjiList, toggleKanji, addKanji, deleteKanji, loadKanjiList } = useContext(KanjiListBase);
@@ -82,23 +108,44 @@ const KanjiList = () => {
   }
 
 
+
   // function to clear all the kanji if needed (dev use for now)
   const clearAppData = async function() {
     try {
         const keys = await AsyncStorage.getAllKeys();
         await AsyncStorage.multiRemove(keys);
+        console.log('appDataCleared')
     } catch (error) {
         console.error('Error clearing app data.');
     }
   }
 
+  function removeItem(index) {
+    const tempList = currentList
+    tempList.splice(index, 1)
+    setCurrentList([...tempList])
+    console.log("delete Pressed")
+    //clearAppData()
+    
+  }
+
+  function addItem(item) {
+    const newKanjiItem = {
+      id: uuidv4(),
+      value: item,
+    }
+    setCurrentList([...currentList, newKanjiItem])
+  }
+
 
   // screen rendering
   return (
-    <ScrollView> 
-
-      
-      <View gap = {7}>
+    <>
+    <View gap = {7} alignItems='center'>
+      <View flexDirection='row'gap={7}>
+      <TouchableOpacity style={styles.button2} onPress={() => {setList(id, JSON.stringify({"id": id, "list": currentList}))}}><Text> Save </Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
+      </View>
         <Text style={styles.text}>
           {kanjiStatus}
         </Text>
@@ -110,19 +157,16 @@ const KanjiList = () => {
         />
         
         <Button title='add kanji' style={styles.button} onPress={() => { 
-           if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addKanji(newKanji); setNewKanji('')}}} />
+           if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
 
         
 
-      </View>
-
-
-
-      
+    </View>
+    <ScrollView>
       <View style={{ paddingHorizontal: 16 }}>
-        {kanjiList.length ? (
-          kanjiList.map((kanji, index) => (
-            <KanjiBox title={'Kanji ' + (index + 1)} value={kanji.name} handlePress1={() => toggleKanji(kanji.id, 'isChecked', !kanji.isChecked)} handlePress2={() => deleteKanji(kanji.id)} key={kanji.id}/>
+        {currentList.length ? (
+          currentList.map((kanji, index) => (
+            <KanjiBox title={'Kanji ' + (index + 1)} value={kanji.value} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} key={index}/>
           ))
         ) : (
           <View style={{ height: 100 }} />
@@ -132,6 +176,7 @@ const KanjiList = () => {
 
       
     </ScrollView>
+  </>
   );
 };
 
@@ -189,6 +234,16 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     alignItems: 'center',
   },
+  button2: {
+    padding: 3,
+    backgroundColor: 'white',
+    color: 'white',
+    borderRadius: 5,
+    borderWidth: 5,
+    alignItems: 'center',
+    width: 70,
+    height: 30,
+  },
   text:{ // text for header
     fontSize: 10,
     textAlign: 'center',
@@ -201,4 +256,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default KanjiList;
+export default EditKanjiList;
