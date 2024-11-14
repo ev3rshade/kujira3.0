@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { setList, setItem, fetchList } from '../components/asyncFunctions.jsx'
 
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
 import { KanjiListBase } from '../components/kanjiListBase.jsx'
 
+//export const CurrentDeck = createContext();
 
 const DeckCard = ({
   deckID,
@@ -55,15 +56,17 @@ const setDefault = async function() {
 }
 
 const createDeck = async () => {
-  
+  id = uuidv4()
+  setCurrent([])
 }
 
 
 
 export default function App() {
-  const { data, loading } = useContext( KanjiListBase );
+  const { data, currentDeck, loading, setCurrent } = useContext( KanjiListBase );
   console.log("context provided:")
   console.log(data)
+  console.log(data[0])
   //JSON.stringify(fetchList(currentListID)).split(",")
   
 
@@ -89,7 +92,7 @@ export default function App() {
       
       <View style={{ paddingHorizontal: 16 }}>
         { (typeof data != 'undefined' && data.length) ? (
-          JSON.parse(data).map((deck, index) => (
+          JSON.parse(data[0][1]).map((deck, index) => (
             <DeckCard deckID={deck.id} kanjiList={deck.list[0]} title={'Deck ' + (index + 1)} key={index}/>
           ))
         ) : (

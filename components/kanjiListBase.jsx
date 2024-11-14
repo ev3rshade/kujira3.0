@@ -19,10 +19,8 @@ export const getAll = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys()
     const items = await AsyncStorage.multiGet(keys)
-    console.log('keys: ' + keys)
-    console.log("items: " + items)
-    const mapped = items.map(([key, value]) => value)
-    console.log('mapped ' + mapped)
+    const mapped = items.map(([key, value]) => [key, value])
+    console.log('mapped: ' + mapped)
     return mapped
     
   } catch (error) {
@@ -50,17 +48,26 @@ export const addToStorage = async (value) => {
   }
 }
 
-
 // functions in ListProvider include
    /* 
     * */
 export const ListProvider = ({ children }) => {
     const [data, setData] = useState(getAll())
+    const [currentDeck, setCurrentDeck] = useState(null)
     const [loading, setLoading] = useState(true)
     console.log('data' + data)
-    const [current, setCurrent] = useState('default')
 
     
+    const setCurrent = async (id) => {
+      try {
+        item = await AsyncStorage.getItem(id)
+        item = JSON.parse(item)
+        setCurrentDeck(item)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     const loadAllData = async () => {
       try {
         const updatedData = await getAll() || []; // Handle null case
@@ -78,7 +85,7 @@ export const ListProvider = ({ children }) => {
     }, []);
 
     return (
-        <KanjiListBase.Provider value={{ data, loading }}>
+        <KanjiListBase.Provider value={{ data, currentDeck, loading, setCurrent }}>
             { children }
         </KanjiListBase.Provider>
     )
