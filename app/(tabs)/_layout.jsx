@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-import SQLite from 'react-native-sqlite-storage'
+import { Tabs } from 'expo-router'
 
 import { ListProvider } from '../../components/kanjiListBase'
 
@@ -15,46 +15,41 @@ import Practice from './practice';
 import Deck from './deck'
 
 
-const Tab = createBottomTabNavigator()
 
 
 const TabsLayout = () => {
    return (
       
-         <Tab.Navigator>
-            <Tab.Screen
-               name='KanjiList'
-               component={ KanjiList }
+         <Tabs>
+            <Tabs.Screen
+               name='kanjiList'
                options={{
                   title: 'Kanji',
                }}
             />
 
-            <Tab.Screen
-               name='Draw'
-               component={ Draw }
+            <Tabs.Screen
+               name='draw'
                options={{
                   title:'Practice',
                }}
                />
 
-            <Tab.Screen
-               name='Practice'
-               component={ Practice }
+            <Tabs.Screen
+               name='practice'
                options={{
                   title:'Practice'
                }}
                />
 
-            <Tab.Screen
+            <Tabs.Screen
                name='deck'
-               component={ Deck }
                options={{
                   title:'Deck'
                }}
                />
                
-         </Tab.Navigator>
+         </Tabs>
       
       
    )

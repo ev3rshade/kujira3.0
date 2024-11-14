@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
-import { Stack } from 'expo-router';
 import {
   View,
   Text,
@@ -11,83 +10,26 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-import { router } from 'expo-router';
-
 
 import 'react-native-get-random-values'; // import get-random-values to get uuid to work
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 
 // custom components
-import AsyncStorage from '@react-native-async-storage/async-storage'; // used to store the current list being rendered from the SQLite database
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { KanjiBox } from '../../components/kanjiBox.jsx'
 import { KanjiListBase } from '../../components/kanjiListBase.jsx' // used as a context component to transfer the list being rendered between screens (kanjiList.jjsx <-> practice.jsx)
 
-import { fetchList, fetchItem, setList, setItem, removeList } from '../../components/asyncFunctions.jsx'
 
 
-const KanjiBox = ({
-    title, 
-    value, 
-    placeholder, 
-    handleChangeText, 
-    handlePress1,
-    handlePress2,
-    otherStyles, 
-    ...props 
-  }) => {
-    
-    return (
-      <View style={styles.container}>
-          <View style={styles.bottom}>
-          {/*<Button title='Edit'
-                  onPress={handlePress1}
-                  style={styles.button}
-          />*/}
-          <Text style={styles.text}> {title} </Text>
-          <View style={styles.middle}>
-          <Button title='X'
-                  onPress={handlePress2}
-                  />
-          </View>
-          </View>
-        <Text
-            numberOfLines={1}
-            style={styles.text2}
-          >
-            {value}
-          </Text>
-      </View>
-    )
-  }
 
-
-  async function initialize () {
-    const storedList = await fetchList('default')
-    console.log('storedList: ')
-    console.log(storedList)
-    return storedList
-  }
+  
 // <<<<<<<<<< COMPONENT THAT'S EXPORTED >>>>>>>>>>>>>
 
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const EditKanjiList = () => {
-
-  const [currentList, setCurrentList] = useState([])
-  const [opened, setOpened] = useState(true)
-  //JSON.stringify(fetchList(currentListID)).split(",")
-  
-  
-  if (opened) {
-    const promiseLists = initialize()
-
-    promiseLists.then((value) => {
-      setCurrentList(value)
-    })
-    setOpened(false)
-  }
-
   // const created from the context of the context component
-  const {kanjiList, toggleKanji, addKanji, deleteKanji, loadKanjiList } = useContext(KanjiListBase);
+  const { data, currentDeck, loading, setCurrent } = useContext(KanjiListBase);
   
 
   // useState const used to update and receive text input from the TextInput component
@@ -117,7 +59,7 @@ const EditKanjiList = () => {
     }
   }
 
-  function removeItem(index) {
+  /*function removeItem(index) {
     const tempList = currentList
     tempList.splice(index, 1)
     setCurrentList([...tempList])
@@ -132,7 +74,7 @@ const EditKanjiList = () => {
       value: item,
     }
     setCurrentList([...currentList, newKanjiItem])
-  }
+  }*/
 
 
   // screen rendering
@@ -140,7 +82,7 @@ const EditKanjiList = () => {
     <>
     <View gap = {7} alignItems='center'>
       <View flexDirection='row'gap={7}>
-      <TouchableOpacity style={styles.button2} onPress={() => {setList(id, JSON.stringify({"id": id, "list": currentList}))}}><Text> Save </Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button2} onPress={() => console.log("save not set yet")}><Text> Save </Text></TouchableOpacity>
       <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
       </View>
         <Text style={styles.text}>
@@ -161,8 +103,8 @@ const EditKanjiList = () => {
     </View>
     <ScrollView>
       <View style={{ paddingHorizontal: 16 }}>
-        {currentList.length ? (
-          currentList.map((kanji, index) => (
+        {(currentDeck !== null && currentDeck.length) ? (
+          currentDeck.map((kanji, index) => (
             <KanjiBox title={'Kanji ' + (index + 1)} value={kanji.value} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} key={index}/>
           ))
         ) : (

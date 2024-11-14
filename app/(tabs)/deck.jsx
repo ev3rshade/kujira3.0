@@ -31,7 +31,6 @@ const KanjiBox = ({
     handlePress1,
     handlePress2,
     otherStyles, 
-    ...props 
   }) => {
     
     return (
@@ -62,9 +61,6 @@ const KanjiBox = ({
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const Deck = () => {
-  const currentListID = JSON.stringify(fetchItem('currentList'))
-  const testList = "花,火,大,会"
-  const currentList = fetchList('default')
 
 
   // screen rendering
