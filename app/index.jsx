@@ -49,7 +49,8 @@ const getStoredDecks = async () => {
 const setDefault = async function() {
   try {
     await AsyncStorage.clear()
-    await setList('default', JSON.stringify([{id: 'default', name: 'default', list:["鯨"]}]))
+    await setList('default', JSON.stringify({id: 'default', name: 'default', list:["鯨"]}))
+    await setList('default2', JSON.stringify({id: 'default2', name: 'default2', list:["花","火","大","会"]}))
   } catch (error) {
       console.error('Error clearing app data.');
   }
@@ -92,15 +93,15 @@ export default function App() {
       
       <View style={{ paddingHorizontal: 16 }}>
         { (typeof data != 'undefined' && data.length) ? (
-          JSON.parse(data[0][1]).map((deck, index) => (
+          data.map((value) => (
             <DeckCard 
-              deckID={deck.id} 
-              title={deck.name}
-              kanjiList={deck.list[0]} 
+              deckID={JSON.parse(value[1]).id} 
+              title={JSON.parse(value[1]).name}
+              kanjiList={JSON.parse(value[1]).list[0]} 
               handlePress = { () =>
-                setCurrent(deck.id)
+                setCurrent(JSON.parse(value[1]).id)
               } 
-              key={index}/>
+              key={value[0]}/>
           ))
         ) : (
           <View style={{ height: 100 }} />
