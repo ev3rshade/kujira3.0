@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, ScrollView, Dimensions } from 'react-native'
 import React, {useState, useContext} from 'react'
 
 import { KanjiListBase } from '../../components/kanjiListBase';
 import DrawBox  from '../../components/drawBox'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+const { height, width } = Dimensions.get('window');
 
 const AnswerBox = ({
   title,
@@ -12,17 +15,24 @@ const AnswerBox = ({
 
   if (!flip) {
     return (
-      <View>
-        <Button title="flip" onPress={() => setFlip(true)}></Button>
+      <View style={{flex: 0, justifyContent:'center',}}>
+        <TouchableOpacity onPress={() => setFlip(!flip)} style={styles.button2}>
+          <Text style={{color:'white'}}>FLIP</Text>
+        </TouchableOpacity>
         <DrawBox scaleHeight={0.3} scaleWidth={0.6}/>
       </View>
     )
   }
   
   return (
-    <TouchableOpacity title={title} style={style} onPress={() => setFlip(false)}>
-      <Text style={{fontSize: 50, textAlign: 'center'}} > {title} </Text>
-    </TouchableOpacity>
+    <View style={{flex: 0, justifyContent:'center',}}>
+      <TouchableOpacity onPress={() => setFlip(!flip)} style={styles.button2}>
+          <Text style={{color:'white'}}>FLIP</Text>
+        </TouchableOpacity>
+      <TouchableHighlight title={title} style={{backgroundColor:'#c4d7ff', justifyContent: 'center', height: height * 0.7 * 0.45, width: width*0.6,}}>
+        <Text className='font-ysk' style={{fontSize: 140, textAlign:'justify'}} > {title} </Text>
+      </TouchableHighlight>
+    </View>
   );
 }
 
@@ -36,7 +46,9 @@ const Practice = () => {
   const list = currentDeck1.substring(currentDeck1.search("list:") + 6, currentDeck1.length - 2).split(",")
 
   return (
-    <View style={{ paddingHorizontal: 5, paddingVertical: 16, gap: 20, alignItems:'center'}}>
+    <SafeAreaProvider>
+    <SafeAreaView style={{ paddingHorizontal: 5, paddingVertical: 16, gap: 20, alignItems:'center'}}>
+      <ScrollView pagingEnabled>
         {list.length ? (
           list.map((kanji, index) => (
             <View style={{ paddingHorizontal: 5, gap: 10}} key={index}>
@@ -50,7 +62,9 @@ const Practice = () => {
             <Text>Add characters in the Kanji List screen</Text>
           </View>
         )}
-    </View>
+      </ScrollView>
+    </SafeAreaView>
+    </SafeAreaProvider>
   )
 
 }
@@ -61,8 +75,13 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'justify',
     backgroundColor: '#c4d7ff',
+  },
+  button2: {
+    alignItems: 'center',
+    borderRadius: 5,
+    backgroundColor: 'blue',
     paddingVertical: 10,
-    height: 90,
+    height: 40,
     width: 90
   },
   text: {

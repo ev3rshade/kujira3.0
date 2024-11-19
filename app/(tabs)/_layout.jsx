@@ -7,9 +7,7 @@ import { Tabs } from 'expo-router'
 
 import { ListProvider } from '../../components/kanjiListBase'
 
-import { fetchList, setList, removeList } from '../../components/asyncFunctions.jsx'
 
-import Draw from './draw';
 import KanjiList from './kanjiList';
 import Practice from './practice';
 import Deck from './deck'
@@ -25,27 +23,23 @@ const TabsLayout = () => {
                name='kanjiList'
                options={{
                   title: 'Kanji',
+                  headerShown: false,
                }}
             />
 
             <Tabs.Screen
-               name='draw'
-               options={{
-                  title:'Practice',
-               }}
-               />
-
-            <Tabs.Screen
                name='practice'
                options={{
-                  title:'Practice'
+                  title:'Practice',
+                  headerShown: false,
                }}
                />
 
             <Tabs.Screen
                name='deck'
                options={{
-                  title:'Deck'
+                  title:'Deck',
+                  headerShown: false,
                }}
                />
                

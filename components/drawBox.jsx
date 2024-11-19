@@ -72,7 +72,7 @@ export default DrawBox;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },

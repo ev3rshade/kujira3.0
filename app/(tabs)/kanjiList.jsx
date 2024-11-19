@@ -6,7 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
 
@@ -16,6 +16,8 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 // custom components
 import { KanjiBox } from '../../components/kanjiBox.jsx'
 import { KanjiListBase } from '../../components/kanjiListBase.jsx' // used as a context component to transfer the list being rendered between screens (kanjiList.jjsx <-> practice.jsx)
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 
 
 
@@ -39,6 +41,7 @@ const EditKanjiList = () => {
   const [edit, setEdit] = useState(false)
   const [newKanji, setNewKanji] = useState('')
   const [kanjiList, setKanjiList] = useState(list)
+  const [newDeckName, setNewDeckName] = useState("new deck")
   
   if (loading) {
     console.log('loading')
@@ -72,11 +75,14 @@ const EditKanjiList = () => {
     setKanjiList([...kanjiList, item])
   }
 
-  function editFunc() {
+  function editFunc(id, name) {
+    if(id == null || id == "" || name == null || name == "") {
+      return
+    }
     setLoading(true)
-    editStorage(deckID, deckName, kanjiList)
+    editStorage(id, name, kanjiList)
     console.log(kanjiList)
-    setCurrentDeck("{\"id\":\"" + deckID + "\",\"name\":\"" + deckName + "\",\"list\":[\"" + kanjiList.join("\",\"") +"\"]}")
+    setCurrentDeck("{\"id\":\"" + id + "\",\"name\":\"" + JSON.stringify(name) + "\",\"list\":[\"" + kanjiList.join("\",\"") +"\"]}")
     console.log("new current deck: " + currentDeck)
     setEdit(false)
   }
@@ -85,19 +91,19 @@ const EditKanjiList = () => {
   
   // screen rendering
   if (currentDeck == null) {
-    const [newDeckName, setNewDeckName] = useState("new deck")
     return (
-        <>
-        <View gap = {7} alignItems='center'>
-        <Text>{newDeckName}</Text>
+        <SafeAreaProvider>
+          <SafeAreaView>
+        <View gap = {7} justifyContent='center'>
+        <Text>Name your deck</Text>
         <TextInput
-              value={newKanji}
-              onChangeText={val => setNewDeckName(val)}
+              value={newDeckName}
+              onChange={val => setNewDeckName(val)}
               style={styles.input}
               placeholder="Enter a deck name"
-            />
+        />
           <View flexDirection='row'gap={7}>
-          <TouchableOpacity style={styles.button2} onPress={() => editFunc()}><Text> Save </Text></TouchableOpacity>
+          <TouchableOpacity style={styles.button2} onPress={() => editFunc(uuidv4(), newDeckName)}><Text> Save </Text></TouchableOpacity>
           <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
           </View>
             <Text style={styles.text}>
@@ -114,6 +120,7 @@ const EditKanjiList = () => {
               if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
             
         </View>
+        
 
 
         <ScrollView>
@@ -130,17 +137,23 @@ const EditKanjiList = () => {
 
           
         </ScrollView>
-      </>
+        </SafeAreaView>
+      </SafeAreaProvider>
     )
   }
   
   if (!edit) {
     return (
-      <View>
-        <Text>{deckName}</Text>
-        <TouchableOpacity onPress={() => setEdit(true)} style={styles.button2}><Text> edit </Text></TouchableOpacity>
+      <SafeAreaProvider backgroundColor='gray'>
+      <SafeAreaView height={window.innerHeightheight} gap={10} style={{alignItems:'center'}}>
+        <View flexDirection='row' justifyContent='center' gap={100}>
+          <Text>{deckName}</Text>
+          <TouchableOpacity onPress={() => setEdit(true)} style={styles.button2}>
+            <Text> Edit </Text>
+          </TouchableOpacity>
+        </View>
         <ScrollView>
-        <View style={{ paddingHorizontal: 16,}}>
+        <View style={{ paddingHorizontal: 16, gap: 10}}>
           {(kanjiList !== null && kanjiList.length) ? (
               kanjiList.map((kanji, index) => (
                 <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={false} key={index}/>
@@ -153,7 +166,8 @@ const EditKanjiList = () => {
 
         
       </ScrollView>
-    </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
     )
   }
 
@@ -162,7 +176,7 @@ const EditKanjiList = () => {
     <View gap = {7} alignItems='center'>
     <Text>{deckName}</Text>
       <View flexDirection='row'gap={7}>
-      <TouchableOpacity style={styles.button2} onPress={() => editFunc()}><Text> Save </Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button2} onPress={() => editFunc(deckID, deckName)}><Text> Save </Text></TouchableOpacity>
       <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
       </View>
         <Text style={styles.text}>
@@ -258,7 +272,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     color: 'white',
     borderRadius: 5,
-    borderWidth: 5,
+    borderWidth: 3,
     alignItems: 'center',
     width: 70,
     height: 30,

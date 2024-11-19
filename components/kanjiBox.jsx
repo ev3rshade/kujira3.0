@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native'
 
 export const KanjiBox = ({
     title, 
@@ -13,22 +13,20 @@ export const KanjiBox = ({
     ...props 
   }) => {
     
-
+    const image = {uri:"https://unblast.com/wp-content/uploads/2022/01/Paper-Texture-4.jpg"}
     if (!editMode) {
       return (
-        <View style={styles.container}>
-            <View style={styles.bottom}>
+        <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:1, flexDirection:'row', justifyContent:'center', width:150, height:140, padding:10,}}>
+          <View style={{gap:10, borderRadius:10,}}>
             <Text style={styles.text}> {title} </Text>
-            <View style={styles.middle}>
-            </View>
-            </View>
-          <Text
-              className='text-2xl font-ysk'
-            >
-              {value}
-          </Text>
-          <Text> </Text>
-        </View>
+            <Text
+                className='text-8xl text-blue-600 font-ysk'
+              >
+                {value}
+            </Text>
+            <Text> </Text>
+          </View>
+        </ImageBackground>
       )
     }
 
@@ -41,13 +39,15 @@ export const KanjiBox = ({
           />*/}
           <Text style={styles.text}> {title} </Text>
           <View style={styles.middle}>
-          <Button title='X'
+          <TouchableOpacity
                   onPress={handlePress2}
-                  />
+                  style={{width:10}}>
+            <Text>X</Text>
+          </TouchableOpacity>
           </View>
           </View>
         <Text
-            className='text-2xl color-SECONDARY font-ysk'
+            className='text-8xl text-blue-600 font-ysk'
           >
             {value}
           </Text>
@@ -60,13 +60,13 @@ export const KanjiBox = ({
       flex: 1,
       justifyContent: 'space-between',
       alignItems:'center',
-      gap: 7,
+      gap: 15,
       backgroundColor: '#fff',
       padding: 20,
       margin: 10,
     },
     top: {
-      flex: 0.3,
+      flex: 0.5,
       backgroundColor: 'grey',
       borderWidth: 5,
       borderTopLeftRadius: 20,

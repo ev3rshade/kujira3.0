@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
@@ -8,8 +8,10 @@ import { setList, setItem, fetchList } from '../components/asyncFunctions.jsx'
 import 'react-native-get-random-values'; // import get-random-values to get uuid to work
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 import { KanjiListBase } from '../components/kanjiListBase.jsx'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 //export const CurrentDeck = createContext();
+const { width } = Dimensions.get("window");
 
 const DeckCard = ({
   deckID,
@@ -17,16 +19,24 @@ const DeckCard = ({
   kanjiList,
   handlePress,
 }) => {
+  const image = {uri:"https://unblast.com/wp-content/uploads/2022/01/Paper-Texture-4.jpg"}
+
   return (
-    <View>
-      <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
-        <TouchableOpacity style={styles.button} onPress={handlePress}>
-          <Text>{title}</Text>
-          <Text className='text-5xl font-ysk'>
-            {kanjiList[0]}
-          </Text>
-        </TouchableOpacity>
-      </Link>
+    
+    <View width={width} alignItems='center' style={{shadowOffset: {
+      width: 20,
+      height: 20,
+    }, shadowOpacity:0.5, shadowRadius:10, shadowColor:'black'}}>
+        <Link href="/kanjiList" asChild style={{fontSize: 20, color: 'blue' }}>
+          <TouchableOpacity style={styles.button} onPress={handlePress}>
+          <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:1, alignItems:'center', justifyContent:'center', width:250, height:250, gap:20,}}>
+            <Text className='font-ysk' style={{fontSize:100, opacity:0.75, }}>
+              {kanjiList[0]}
+            </Text>
+            <Text style={{fontSize:30,}}>{title}</Text>
+            </ImageBackground>
+          </TouchableOpacity>
+        </Link>
     </View>
   )
 }
@@ -56,15 +66,12 @@ const setDefault = async function() {
   }
 }
 
-const createDeck = async () => {
-  id = uuidv4()
-  setCurrent([])
-}
-
 
 
 export default function App() {
   const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, loadAllData } = useContext( KanjiListBase );
+  const bgImage = {uri:'https://media.istockphoto.com/id/1316535091/photo/white-background-of-japanese-paper.jpg?s=612x612&w=0&k=20&c=DztkLMm3y7Xtg-CO5WJXtukn-p0NJ8I2b8qo2F9AxcU='}
+
   console.log("context provided:")
   console.log(data)
   
@@ -81,11 +88,13 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaProvider>
+    <ImageBackground source={bgImage} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
+      <SafeAreaView style={styles.container}>
       <StatusBar/>
       <Text> Welcome back </Text>
       <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button2}>
           <Text>
             Begin Practicing
           </Text>
@@ -93,7 +102,8 @@ export default function App() {
       </Link>
       
       
-      <View style={{ paddingHorizontal: 16 }}>
+      <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, flexDirection: 'row', paddingVertical:20, paddingRight:20,}} 
+      contentContainerStyle={{justifyContent: 'space-between', flexDirection:'row'}}>
       {(typeof data != 'undefined' && data.length) ? (
           data.map((value, index) => (
             <DeckCard 
@@ -108,32 +118,33 @@ export default function App() {
         ) : (
           <View style={{ height: 100 }} />
         )}
-      </View>
+      </ScrollView>
       <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
         <TouchableOpacity style={styles.button2} onPress={() => setCurrent(data.length)}>
           
-          <Text>
+          <Text style={{color:'white'}}>
             create deck
           </Text>
         </TouchableOpacity>
       </Link>
         <TouchableOpacity style={styles.button2} onPress={() => {setDefault()}}>
-          <Text>
+          <Text style={{color:'white'}}>
             reset
           </Text>
         </TouchableOpacity>
-      
-    </View>
+    </SafeAreaView>
+    </ImageBackground>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 3,
+    flex: 1,
     alignItems: 'center',
     justifyContent:'center',
     padding: 10,
-    gap: 7
+    gap: 20
   }, 
   text:{
       fontSize: 20,
@@ -141,18 +152,19 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: 'center',
+    borderRadius: 25,
     justifyContent: 'center',
     backgroundColor: '#c4d7ff',
-    paddingVertical: 10,
-    height: 150,
-    width: 150
+    height: 250,
+    width: 250
   },
   button2: {
     alignItems: 'center',
+    borderRadius: 10,
     justifyContent: 'center',
     backgroundColor: 'blue',
     paddingVertical: 10,
-    height: 75,
+    height: 50,
     width: 150
   },
 });
