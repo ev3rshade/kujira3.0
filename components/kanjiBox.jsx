@@ -3,14 +3,35 @@ import { View, Text, Button, StyleSheet } from 'react-native'
 export const KanjiBox = ({
     title, 
     value, 
+    reading,
     placeholder, 
     handleChangeText, 
     handlePress1,
     handlePress2,
     otherStyles, 
+    editMode,
     ...props 
   }) => {
     
+
+    if (!editMode) {
+      return (
+        <View style={styles.container}>
+            <View style={styles.bottom}>
+            <Text style={styles.text}> {title} </Text>
+            <View style={styles.middle}>
+            </View>
+            </View>
+          <Text
+              className='text-2xl font-ysk'
+            >
+              {value}
+          </Text>
+          <Text> </Text>
+        </View>
+      )
+    }
+
     return (
       <View style={styles.container}>
           <View style={styles.bottom}>
@@ -26,8 +47,7 @@ export const KanjiBox = ({
           </View>
           </View>
         <Text
-            numberOfLines={1}
-            style={styles.text2}
+            className='text-2xl color-SECONDARY font-ysk'
           >
             {value}
           </Text>
@@ -101,6 +121,7 @@ export const KanjiBox = ({
     },
     text2: {
       color: 'blue',
+      fontFamily: 'ysk',
       fontSize: 100,
       textAlign: 'center'
     },

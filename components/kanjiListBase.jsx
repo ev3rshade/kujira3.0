@@ -28,21 +28,18 @@ export const getAll = async () => {
   }
 }
 
-
-export const addToStorage = async (value) => {
-  const newID = uuidv4()
+export const addToStorage = async (id, name, value) => {
   try {
     const newItem = {
-      id: newID,
-      value: value,
-    };
+      'id': id,
+      'name': name,
+      'value': value,
+    }
     await AsyncStorage.setItem(
-      newID,
+      id,
       JSON.stringify(newItem)
     );
-    AsyncStorage.getAllKeys()
-    .then((keys)=> AsyncStorage.multiGet(keys)
-    .then((data) => setData(data)))
+    setCurrent(AsyncStorage.getItem(id))
   } catch (error) {
     console.log(error);
   }
@@ -55,16 +52,32 @@ export const ListProvider = ({ children }) => {
     const [data, setData] = useState(getAll())
     const [currentDeck, setCurrentDeck] = useState(null)
     const [loading, setLoading] = useState(true)
-    console.log('data' + data)
+    console.log('data: ' + data)
 
     
-    const setCurrent = async (id) => {
+    const setCurrent = async (index) => {
       try {
-        item = await AsyncStorage.getItem(id)
-        item = JSON.parse(item)
-        setCurrentDeck(item)
+        console.log('item: '  + index)
+        setCurrentDeck(data[index][1])
+      } catch (error) {
+        setCurrentDeck(null)
+        console.log(error); //TODO UPDATE TRY CATCH
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const editStorage = async (id, name, value) => {
+      const item = {"id": id,"name": name,"list": value }
+      try {
+        await AsyncStorage.setItem(
+          id,
+          JSON.stringify(item)
+        )
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -72,6 +85,7 @@ export const ListProvider = ({ children }) => {
       try {
         const updatedData = await getAll() || []; // Handle null case
         setData(updatedData)
+        setCurrent(currentDeck)
       } catch (error) {
         console.log(error);
       } finally {
@@ -85,7 +99,7 @@ export const ListProvider = ({ children }) => {
     }, []);
 
     return (
-        <KanjiListBase.Provider value={{ data, currentDeck, loading, setCurrent }}>
+        <KanjiListBase.Provider value={{ data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, loadAllData }}>
             { children }
         </KanjiListBase.Provider>
     )

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, createContext, useCallback } fr
 import {
   View,
   Text,
-  StatusBar,
   Button,
   ScrollView,
   StyleSheet,
@@ -15,7 +14,6 @@ import 'react-native-get-random-values'; // import get-random-values to get uuid
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID
 
 // custom components
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { KanjiBox } from '../../components/kanjiBox.jsx'
 import { KanjiListBase } from '../../components/kanjiListBase.jsx' // used as a context component to transfer the list being rendered between screens (kanjiList.jjsx <-> practice.jsx)
 
@@ -28,12 +26,26 @@ import { KanjiListBase } from '../../components/kanjiListBase.jsx' // used as a 
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const EditKanjiList = () => {
+  const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage } = useContext(KanjiListBase);
   // const created from the context of the context component
-  const { data, currentDeck, loading, setCurrent } = useContext(KanjiListBase);
-  
+  console.log("currentdeck: " + currentDeck)
+  var currentDeck1 = (currentDeck != null) ? currentDeck.replaceAll("\"", "") : ""
+  var deckID = (currentDeck != null) ? currentDeck1.substring(4, currentDeck1.search("name:") - 1) : ""
+  var deckName = (currentDeck != null) ? currentDeck1.substring(currentDeck1.search("name:") + 5, currentDeck1.search("list:") - 1) : ""
+  console.log(deckID)
+  const[list, setList] = useState((currentDeck != null) ? currentDeck1.substring(currentDeck1.search("list:") + 6, currentDeck1.length - 2).split(",") : [])
 
   // useState const used to update and receive text input from the TextInput component
-  const [newKanji, setNewKanji] = useState('');
+  const [edit, setEdit] = useState(false)
+  const [newKanji, setNewKanji] = useState('')
+  const [kanjiList, setKanjiList] = useState(list)
+  
+  if (loading) {
+    console.log('loading')
+    return (
+      <Text> loading </Text>
+    )
+  } 
 
 
   // const to store text at the top of the screen
@@ -47,42 +59,110 @@ const EditKanjiList = () => {
   }
 
 
-
-  // function to clear all the kanji if needed (dev use for now)
-  const clearAppData = async function() {
-    try {
-        const keys = await AsyncStorage.getAllKeys();
-        await AsyncStorage.multiRemove(keys);
-        console.log('appDataCleared')
-    } catch (error) {
-        console.error('Error clearing app data.');
-    }
-  }
-
-  /*function removeItem(index) {
-    const tempList = currentList
+  function removeItem(index) {
+    const tempList = kanjiList
     tempList.splice(index, 1)
-    setCurrentList([...tempList])
+    setKanjiList([...tempList])
     console.log("delete Pressed")
     //clearAppData()
     
   }
 
   function addItem(item) {
-    const newKanjiItem = {
-      id: uuidv4(),
-      value: item,
-    }
-    setCurrentList([...currentList, newKanjiItem])
-  }*/
+    setKanjiList([...kanjiList, item])
+  }
+
+  function editFunc() {
+    setLoading(true)
+    editStorage(deckID, deckName, kanjiList)
+    console.log(kanjiList)
+    setCurrentDeck("{\"id\":\"" + deckID + "\",\"name\":\"" + deckName + "\",\"list\":[\"" + kanjiList.join("\",\"") +"\"]}")
+    console.log("new current deck: " + currentDeck)
+    setEdit(false)
+  }
 
 
+  
   // screen rendering
+  if (currentDeck == null) {
+    const [newDeckName, setNewDeckName] = useState("new deck")
+    return (
+        <>
+        <View gap = {7} alignItems='center'>
+        <Text>{newDeckName}</Text>
+        <TextInput
+              value={newKanji}
+              onChangeText={val => setNewDeckName(val)}
+              style={styles.input}
+              placeholder="Enter a deck name"
+            />
+          <View flexDirection='row'gap={7}>
+          <TouchableOpacity style={styles.button2} onPress={() => editFunc()}><Text> Save </Text></TouchableOpacity>
+          <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
+          </View>
+            <Text style={styles.text}>
+              {kanjiStatus}
+            </Text>
+            <TextInput
+              value={newKanji}
+              onChangeText={val => setNewKanji(val)}
+              style={styles.input}
+              placeholder="Enter new kanji"
+            />
+            
+            <Button title='add kanji' style={styles.button} onPress={() => { 
+              if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
+            
+        </View>
+
+
+        <ScrollView>
+          <View style={{ paddingHorizontal: 16 }}>
+            {(kanjiList !== null && kanjiList.length) ? (
+                kanjiList.map((kanji, index) => (
+                  <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
+                ))
+              ) : (
+                <View style={{ height: 100 }} />
+            )}
+          </View>
+
+
+          
+        </ScrollView>
+      </>
+    )
+  }
+  
+  if (!edit) {
+    return (
+      <View>
+        <Text>{deckName}</Text>
+        <TouchableOpacity onPress={() => setEdit(true)} style={styles.button2}><Text> edit </Text></TouchableOpacity>
+        <ScrollView>
+        <View style={{ paddingHorizontal: 16,}}>
+          {(kanjiList !== null && kanjiList.length) ? (
+              kanjiList.map((kanji, index) => (
+                <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={false} key={index}/>
+              ))
+            ) : (
+              <View style={{ height: 100 }} />
+          )}
+        </View>
+
+
+        
+      </ScrollView>
+    </View>
+    )
+  }
+
   return (
     <>
     <View gap = {7} alignItems='center'>
+    <Text>{deckName}</Text>
       <View flexDirection='row'gap={7}>
-      <TouchableOpacity style={styles.button2} onPress={() => console.log("save not set yet")}><Text> Save </Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button2} onPress={() => editFunc()}><Text> Save </Text></TouchableOpacity>
       <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
       </View>
         <Text style={styles.text}>
@@ -97,18 +177,18 @@ const EditKanjiList = () => {
         
         <Button title='add kanji' style={styles.button} onPress={() => { 
            if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
-
         
-
     </View>
+
+
     <ScrollView>
       <View style={{ paddingHorizontal: 16 }}>
-        {(currentDeck !== null && currentDeck.length) ? (
-          currentDeck.map((kanji, index) => (
-            <KanjiBox title={'Kanji ' + (index + 1)} value={kanji.value} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} key={index}/>
-          ))
-        ) : (
-          <View style={{ height: 100 }} />
+        {(kanjiList !== null && kanjiList.length) ? (
+            kanjiList.map((kanji, index) => (
+              <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
+            ))
+          ) : (
+            <View style={{ height: 100 }} />
         )}
       </View>
 
@@ -193,6 +273,6 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
-});
+})
 
 export default EditKanjiList;

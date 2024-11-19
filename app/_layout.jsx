@@ -1,8 +1,30 @@
-import { StyleSheet, Text, View } from 'react-native'
-import {Stack } from 'expo-router';
-import { ListProvider } from '../components/kanjiListBase';
+import { useEffect } from "react"
+import { useFonts } from "expo-font"
+import { Stack } from 'expo-router'
+import { ListProvider } from '../components/kanjiListBase'
+
+// global CSS file import
+import "../global.css";
 
 const RootLayout = () => {
+    const [fontsLoaded, error] = useFonts({
+        "Yuji Syuku": require("../assets/fonts/YujiSyuku-Regular.ttf"),
+      });
+
+      useEffect(() => {
+        if (error) throw error;
+    
+        
+      }, [fontsLoaded, error]);
+    
+      if (!fontsLoaded) {
+        return null;
+      }
+    
+      if (!fontsLoaded && !error) {
+        return null;
+      }
+
     return (
         <ListProvider>
             <Stack>

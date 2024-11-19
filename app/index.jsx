@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { Link, router } from 'expo-router';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { setList, setItem, fetchList } from '../components/asyncFunctions.jsx'
 
@@ -22,7 +22,7 @@ const DeckCard = ({
       <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
         <TouchableOpacity style={styles.button} onPress={handlePress}>
           <Text>{title}</Text>
-          <Text>
+          <Text className='text-5xl font-ysk'>
             {kanjiList[0]}
           </Text>
         </TouchableOpacity>
@@ -64,12 +64,14 @@ const createDeck = async () => {
 
 
 export default function App() {
-  const { data, currentDeck, loading, setCurrent } = useContext( KanjiListBase );
+  const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, loadAllData } = useContext( KanjiListBase );
   console.log("context provided:")
   console.log(data)
-  console.log(data[0])
-  //JSON.stringify(fetchList(currentListID)).split(",")
   
+  useEffect(() => {
+      
+    loadAllData();
+  }, []);
 
   if (loading) {
     console.log('loading')
@@ -92,14 +94,14 @@ export default function App() {
       
       
       <View style={{ paddingHorizontal: 16 }}>
-        { (typeof data != 'undefined' && data.length) ? (
-          data.map((value) => (
+      {(typeof data != 'undefined' && data.length) ? (
+          data.map((value, index) => (
             <DeckCard 
               deckID={JSON.parse(value[1]).id} 
               title={JSON.parse(value[1]).name}
               kanjiList={JSON.parse(value[1]).list[0]} 
               handlePress = { () =>
-                setCurrent(JSON.parse(value[1]).id)
+                setCurrent(index)
               } 
               key={value[0]}/>
           ))
@@ -107,9 +109,17 @@ export default function App() {
           <View style={{ height: 100 }} />
         )}
       </View>
-        <TouchableOpacity style={styles.button2} onPress={() => {setDefault()}}>
+      <Link href="/kanjiList" asChild style={{ textAlign:'center', fontSize: 20, color: 'blue' }}>
+        <TouchableOpacity style={styles.button2} onPress={() => setCurrent(data.length)}>
+          
           <Text>
             create deck
+          </Text>
+        </TouchableOpacity>
+      </Link>
+        <TouchableOpacity style={styles.button2} onPress={() => {setDefault()}}>
+          <Text>
+            reset
           </Text>
         </TouchableOpacity>
       

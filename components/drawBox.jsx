@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text} from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const { height, width } = Dimensions.get('window');
