@@ -20,7 +20,8 @@ module.exports = {
 
       },
       fontFamily: {
-        ysk:["Yuji Syuku"]
+        ysk:["Yuji Syuku"],
+        courP:["Courier Prime Regular"]
       },
     },
   },

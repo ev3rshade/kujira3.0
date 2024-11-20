@@ -16,11 +16,18 @@ export const KanjiBox = ({
     const image = {uri:"https://unblast.com/wp-content/uploads/2022/01/Paper-Texture-4.jpg"}
     if (!editMode) {
       return (
-        <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:1, flexDirection:'row', justifyContent:'center', width:150, height:140, padding:10,}}>
-          <View style={{gap:10, borderRadius:10,}}>
-            <Text style={styles.text}> {title} </Text>
+        <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:0, flexDirection:'row', justifyContent:'center', width:160, height:170, paddingVertical:30, shadowOffset: {
+          width: 10,
+          height: 10,
+        }, 
+        shadowOpacity:0.5, 
+        shadowRadius:5, 
+        shadowColor:'#0d142e'}}>
+          <View style={styles.container}>
+            <Text textAlign='left'> {title} </Text>
             <Text
-                className='text-8xl text-blue-600 font-ysk'
+                className='font-ysk'
+                style={{fontSize:75,}}
               >
                 {value}
             </Text>
@@ -31,39 +38,39 @@ export const KanjiBox = ({
     }
 
     return (
+      <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:0, flexDirection:'row', justifyContent:'center', width:160, height:160, padding:10,shadowOffset: {
+        width: 10,
+        height: 10,
+      }, 
+      shadowOpacity:0.5, 
+      shadowRadius:5, 
+      shadowColor:'#0d142e'}}>
       <View style={styles.container}>
           <View style={styles.bottom}>
-          {/*<Button title='Edit'
-                  onPress={handlePress1}
-                  style={styles.button}
-          />*/}
-          <Text style={styles.text}> {title} </Text>
-          <View style={styles.middle}>
-          <TouchableOpacity
-                  onPress={handlePress2}
-                  style={{width:10}}>
-            <Text>X</Text>
-          </TouchableOpacity>
-          </View>
+            <Text style={styles.text}> {title} </Text>
+              <TouchableOpacity
+                      onPress={handlePress2}
+                      style={{width:30, height:30, borderWidth:3, borderRadius:5, alignContent:'center', justifyContent:'center'}}>
+                <Text flex={2} alignItems='center' justifyContent='center' style={{fontSize: 20}} paddingHorizontal={4}>X</Text>
+              </TouchableOpacity>
           </View>
         <Text
-            className='text-8xl text-blue-600 font-ysk'
+            className='font-ysk'
+            style={{fontSize:75,}}
           >
             {value}
           </Text>
       </View>
+      </ImageBackground>
     )
   }
 
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      justifyContent: 'space-between',
-      alignItems:'center',
-      gap: 15,
-      backgroundColor: '#fff',
-      padding: 20,
-      margin: 10,
+      flex:0, 
+      alignItems:'left', 
+      justifyContent:'center', 
+      borderRadius:10,
     },
     top: {
       flex: 0.5,
@@ -73,9 +80,10 @@ export const KanjiBox = ({
       borderTopRightRadius: 20,
     },
     middle: {
-      flex: 0.3,
+      flex: 2,
       flexDirection:'column',
-      width: 20,
+      width: 50,
+      height: 30,
       alignItems: 'center',
       gap: 12,
       backgroundColor: '#dadbf7',
@@ -83,11 +91,11 @@ export const KanjiBox = ({
       borderRadius: 20,
     },
     bottom: {
-      flex: 0.3,
       flexDirection:'row',
-      alignItems: 'center',
-      gap: 12,
-      backgroundColor: '#ffffff',
+      justifyContent:'center',
+      alignContent: 'center',
+      width:100,
+      height:15,
     },
   
     input: { // text input
@@ -116,8 +124,10 @@ export const KanjiBox = ({
       height: 30,
     },
     text:{ // text for header
+      flex: 1,
       fontSize: 10,
-      textAlign: 'center',
+      textAlign: 'left',
+      height: 30,
     },
     text2: {
       color: 'blue',

@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Touchable,
+  ImageBackground,
 } from 'react-native';
 
 
@@ -28,7 +30,9 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 // the kanji list component -- dynamically renders the list provided from the comopenents above
 const EditKanjiList = () => {
-  const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage } = useContext(KanjiListBase);
+  const bgImage = {uri:'https://img.freepik.com/free-photo/white-recycle-paper-texture_1194-6391.jpg?semt=ais_hybrid'}
+
+  const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, deleteDeck } = useContext(KanjiListBase);
   // const created from the context of the context component
   console.log("currentdeck: " + currentDeck)
   var currentDeck1 = (currentDeck != null) ? currentDeck.replaceAll("\"", "") : ""
@@ -76,13 +80,10 @@ const EditKanjiList = () => {
   }
 
   function editFunc(id, name) {
-    if(id == null || id == "" || name == null || name == "") {
-      return
-    }
     setLoading(true)
     editStorage(id, name, kanjiList)
     console.log(kanjiList)
-    setCurrentDeck("{\"id\":\"" + id + "\",\"name\":\"" + JSON.stringify(name) + "\",\"list\":[\"" + kanjiList.join("\",\"") +"\"]}")
+    setCurrentDeck("{\"id\":\"" + id + "\",\"name\":\"" + name.toString() + "\",\"list\":[\"" + kanjiList.join("\",\"") +"\"]}")
     console.log("new current deck: " + currentDeck)
     setEdit(false)
   }
@@ -92,20 +93,23 @@ const EditKanjiList = () => {
   // screen rendering
   if (currentDeck == null) {
     return (
-        <SafeAreaProvider>
+      <ImageBackground source={bgImage} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
+        <SafeAreaProvider padding={5}>
           <SafeAreaView>
-        <View gap = {7} justifyContent='center'>
-        <Text>Name your deck</Text>
-        <TextInput
-              value={newDeckName}
+        <View gap = {7} alignItems='center' justifyContent='center' marginBottom={30}>
+        <View width={window.innerWidth} flexDirection='row' gap={10} alignItems='center' justifyContent='space-between' paddingHorizontal={23}>
+          <Text>Name your deck</Text>
+          <TextInput
+              flex={1}
               onChange={val => setNewDeckName(val)}
-              style={styles.input}
-              placeholder="Enter a deck name"
-        />
-          <View flexDirection='row'gap={7}>
-          <TouchableOpacity style={styles.button2} onPress={() => editFunc(uuidv4(), newDeckName)}><Text> Save </Text></TouchableOpacity>
-          <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
-          </View>
+              style={{borderWidth: 1,
+                borderColor: '#ccc',
+                padding: 10,
+                borderRadius: 5,
+                fontSize:20,}}
+              placeholder='Enter deck name'
+          />
+        </View>
             <Text style={styles.text}>
               {kanjiStatus}
             </Text>
@@ -113,50 +117,20 @@ const EditKanjiList = () => {
               value={newKanji}
               onChangeText={val => setNewKanji(val)}
               style={styles.input}
-              placeholder="Enter new kanji"
+              placeholder="あ"
             />
-            
-            <Button title='add kanji' style={styles.button} onPress={() => { 
-              if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
+            <TouchableOpacity style={styles.button} onPress={() => { 
+              if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}}><Text>Add Kanji</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.button2} onPress={() => editFunc(uuidv4(), newDeckName)}><Text> Save </Text></TouchableOpacity>
             
         </View>
-        
 
 
         <ScrollView>
-          <View style={{ paddingHorizontal: 16 }}>
-            {(kanjiList !== null && kanjiList.length) ? (
-                kanjiList.map((kanji, index) => (
-                  <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
-                ))
-              ) : (
-                <View style={{ height: 100 }} />
-            )}
-          </View>
-
-
-          
-        </ScrollView>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    )
-  }
-  
-  if (!edit) {
-    return (
-      <SafeAreaProvider backgroundColor='gray'>
-      <SafeAreaView height={window.innerHeightheight} gap={10} style={{alignItems:'center'}}>
-        <View flexDirection='row' justifyContent='center' gap={100}>
-          <Text>{deckName}</Text>
-          <TouchableOpacity onPress={() => setEdit(true)} style={styles.button2}>
-            <Text> Edit </Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView>
-        <View style={{ paddingHorizontal: 16, gap: 10}}>
+        <View flexDirection='row' justifyContent='center' style={{ flexWrap:'wrap', rowGap:20, columnGap:20, maxWidth:500,marginBottom:30}}>
           {(kanjiList !== null && kanjiList.length) ? (
               kanjiList.map((kanji, index) => (
-                <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={false} key={index}/>
+                <KanjiBox title={(index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
               ))
             ) : (
               <View style={{ height: 100 }} />
@@ -168,48 +142,86 @@ const EditKanjiList = () => {
       </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
+    </ImageBackground>
+    )
+  }
+  
+  if (!edit) {
+    return (
+      <ImageBackground source={bgImage} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
+      <SafeAreaProvider>
+      <SafeAreaView height={window.innerHeightheight} gap={10} style={{alignItems:'center'}}>
+        <View width={window.innerWidth} flexDirection='row' gap={50} alignItems='center' paddingHorizontal={23}>
+          <Text className='font-ysk' flex={1} style={{textAlign: 'left', borderWidth: 3, fontSize: 20, paddingHorizontal:30}}>{deckName}</Text>
+          <TouchableOpacity onPress={() => setEdit(true)} style={styles.button2}>
+            <Text> Edit </Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView>
+        <View flexDirection='row' justifyContent='center' style={{ flexWrap:'wrap', rowGap:20, columnGap:20, maxWidth:500, marginBottom:30}}>
+          {(kanjiList !== null && kanjiList.length) ? (
+              kanjiList.map((kanji, index) => (
+                <KanjiBox title={(index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={false} key={index}/>
+              ))
+            ) : (
+              <View style={{ height: 100 }} />
+          )}
+        </View>
+
+
+        
+      </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
+    </ImageBackground>
     )
   }
 
   return (
-    <>
-    <View gap = {7} alignItems='center'>
-    <Text>{deckName}</Text>
-      <View flexDirection='row'gap={7}>
-      <TouchableOpacity style={styles.button2} onPress={() => editFunc(deckID, deckName)}><Text> Save </Text></TouchableOpacity>
-      <TouchableOpacity style={styles.button2}><Text> delete </Text></TouchableOpacity>
-      </View>
-        <Text style={styles.text}>
-          {kanjiStatus}
-        </Text>
-        <TextInput
-          value={newKanji}
-          onChangeText={val => setNewKanji(val)}
-          style={styles.input}
-          placeholder="Enter new kanji"
-        />
+    <ImageBackground source={bgImage} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <View gap = {7} alignItems='center'>
+        <View width={window.innerWidth} flexDirection='row' gap={50} alignItems='center' paddingHorizontal={23}>
+          <Text className='font-ysk' flex={1} style={{textAlign: 'left', borderWidth: 3, fontSize: 20, paddingHorizontal:30}}>{deckName}</Text>
+          <TouchableOpacity style={styles.button2} onPress= {() => deleteDeck(deckID)}><Text> delete </Text></TouchableOpacity>
+        </View>
+            <Text style={styles.text}>
+              {kanjiStatus}
+            </Text>
+            <View gap={10} padding={10}>
+              <TextInput
+                value={newKanji}
+                onChangeText={val => setNewKanji(val)}
+                style={styles.input}
+                placeholder='あ'
+              />
+
+              <TouchableOpacity style={styles.button} onPress={() => { 
+                if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}}><Text>Add Kanji</Text></TouchableOpacity>
+              </View>
+            <TouchableOpacity style={styles.button2} onPress={() => editFunc(deckID, deckName)}><Text> Save </Text></TouchableOpacity>
+            
+        </View>
+
+
+        <ScrollView>
+        <View flexDirection='row' justifyContent='center' style={{ flexWrap:'wrap', rowGap:20, columnGap:20, maxWidth:500, marginBottom:30}}>
+          {(kanjiList !== null && kanjiList.length) ? (
+              kanjiList.map((kanji, index) => (
+                <KanjiBox title={(index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
+              ))
+            ) : (
+              <View style={{ height: 100 }} />
+          )}
+        </View>
+
+
         
-        <Button title='add kanji' style={styles.button} onPress={() => { 
-           if ((newKanji) && (newKanji.length == 1) && isKanji(newKanji.charAt(0))) {addItem(newKanji); setNewKanji('')}}} />
-        
-    </View>
-
-
-    <ScrollView>
-      <View style={{ paddingHorizontal: 16 }}>
-        {(kanjiList !== null && kanjiList.length) ? (
-            kanjiList.map((kanji, index) => (
-              <KanjiBox title={'Kanji ' + (index + 1)} value={kanji} handlePress1={() => console.log('handlePress1') } handlePress2={() => removeItem(index)} editMode={true} key={index}/>
-            ))
-          ) : (
-            <View style={{ height: 100 }} />
-        )}
-      </View>
-
-
-      
-    </ScrollView>
-  </>
+      </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
+    </ImageBackground>
   );
 };
 
@@ -256,15 +268,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
-    marginBottom: 20,
     borderRadius: 5,
+    fontSize: 75,
   },
   button: { // button
-    padding: 3,
-    backgroundColor: 'black',
+    padding: 6,
+    backgroundColor: 'blue',
     color: 'black',
     borderRadius: 5,
-    borderWidth: 5,
+    borderWidth: 3,
     alignItems: 'center',
   },
   button2: {

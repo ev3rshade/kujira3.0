@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, ScrollView, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, ScrollView, Dimensions, ImageBackground } from 'react-native'
 import React, {useState, useContext} from 'react'
 
 import { KanjiListBase } from '../../components/kanjiListBase';
@@ -6,6 +6,8 @@ import DrawBox  from '../../components/drawBox'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const { height, width } = Dimensions.get('window');
+const bgImage = {uri:'https://img.freepik.com/free-photo/white-recycle-paper-texture_1194-6391.jpg?semt=ais_hybrid'}
+const image = {uri:"https://unblast.com/wp-content/uploads/2022/01/Paper-Texture-4.jpg"}
 
 const AnswerBox = ({
   title,
@@ -15,23 +17,25 @@ const AnswerBox = ({
 
   if (!flip) {
     return (
-      <View style={{flex: 0, justifyContent:'center',}}>
+      <View height='400' style={{alignItems:'center', justifyContent:'center',}}>
         <TouchableOpacity onPress={() => setFlip(!flip)} style={styles.button2}>
           <Text style={{color:'white'}}>FLIP</Text>
         </TouchableOpacity>
-        <DrawBox scaleHeight={0.3} scaleWidth={0.6}/>
+        <DrawBox scaleHeight={0.3} scaleWidth={0.6} strokeWidth={5}/>
       </View>
     )
   }
   
   return (
-    <View style={{flex: 0, justifyContent:'center',}}>
+    <View height='400' style={{alignItems:'center', justifyContent:'center',}}>
       <TouchableOpacity onPress={() => setFlip(!flip)} style={styles.button2}>
           <Text style={{color:'white'}}>FLIP</Text>
-        </TouchableOpacity>
-      <TouchableHighlight title={title} style={{backgroundColor:'#c4d7ff', justifyContent: 'center', height: height * 0.7 * 0.45, width: width*0.6,}}>
+      </TouchableOpacity>
+      <ImageBackground source={image} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
+      <TouchableHighlight title={title} style={{backgroundColor:'#ffffff', justifyContent: 'center', height: height * 0.7 * 0.45, width: width*0.6,}}>
         <Text className='font-ysk' style={{fontSize: 140, textAlign:'justify'}} > {title} </Text>
       </TouchableHighlight>
+      </ImageBackground>
     </View>
   );
 }
@@ -45,16 +49,24 @@ const Practice = () => {
   console.log(deckID)
   const list = currentDeck1.substring(currentDeck1.search("list:") + 6, currentDeck1.length - 2).split(",")
 
+  const ref = React.useRef(0);
+
+  function scrollFunc(x, y) {
+    ref.current.scrollTo(x, y)
+  }
+
   return (
+    <ImageBackground source={bgImage} resizeMode='cover' style={{flex:1, justifyContent:'center'}}>
     <SafeAreaProvider>
-    <SafeAreaView style={{ paddingHorizontal: 5, paddingVertical: 16, gap: 20, alignItems:'center'}}>
-      <ScrollView pagingEnabled>
+      
+    <SafeAreaView style={{ paddingHorizontal: 5, paddingVertical: 16, gap: 20, alignItems:'center', justifyContent:'center'}}>
+      <Text className='font-ysk' flex={1} style={{textAlign: 'left', borderWidth: 3, fontSize: 20, paddingHorizontal:30}}>{deckName}</Text>
+      <ScrollView horizontal={true} pagingEnabled contentContainerStyle={{flexDirection:'row',}}>
         {list.length ? (
           list.map((kanji, index) => (
-            <View style={{ paddingHorizontal: 5, gap: 10}} key={index}>
+            <View width={width * 0.97} height={height*0.75} style={{ paddingHorizontal: 5, alignContent:'center', justifyContent:'center', gap: 10}} key={index}>
               <Text style={{ fontSize:30 }}>| {index + 1} |</Text>
-            <AnswerBox title={kanji} style={styles.button} handlePress={() => setFlip(false)} key={index}/>
-            
+              <AnswerBox title={kanji} style={styles.button} handlePress={() => setFlip(false)} key={index}/>
             </View>
           ))
         ) : (
@@ -62,9 +74,11 @@ const Practice = () => {
             <Text>Add characters in the Kanji List screen</Text>
           </View>
         )}
+        <TouchableOpacity></TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
     </SafeAreaProvider>
+    </ImageBackground>
   )
 
 }
@@ -74,7 +88,8 @@ export default Practice
 const styles = StyleSheet.create({
   button: {
     alignItems: 'justify',
-    backgroundColor: '#c4d7ff',
+    justifyContent:'center',
+    backgroundColor: '#ffffff',
   },
   button2: {
     alignItems: 'center',

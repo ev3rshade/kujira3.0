@@ -23,20 +23,20 @@ const DeckCard = ({
 
   return (
     
-    <View width={width} alignItems='center' style={{shadowOffset: {
+    <View gap={30} width={width*0.95} alignItems='center' style={{shadowOffset: {
       width: 20,
       height: 20,
-    }, shadowOpacity:0.5, shadowRadius:10, shadowColor:'black'}}>
+    }, shadowOpacity:0.5, shadowRadius:20, shadowColor:'#7d5932'}}>
         <Link href="/kanjiList" asChild style={{fontSize: 20, color: 'blue' }}>
           <TouchableOpacity style={styles.button} onPress={handlePress}>
           <ImageBackground source={image} resizeMode='cover' borderRadius={5} style={{flex:1, alignItems:'center', justifyContent:'center', width:250, height:250, gap:20,}}>
             <Text className='font-ysk' style={{fontSize:100, opacity:0.75, }}>
               {kanjiList[0]}
             </Text>
-            <Text style={{fontSize:30,}}>{title}</Text>
             </ImageBackground>
           </TouchableOpacity>
         </Link>
+        <Text className='font-ysk' style={{fontSize:30,}}>{title}</Text>
     </View>
   )
 }
@@ -59,8 +59,9 @@ const getStoredDecks = async () => {
 const setDefault = async function() {
   try {
     await AsyncStorage.clear()
-    await setList('default', JSON.stringify({id: 'default', name: 'default', list:["鯨"]}))
-    await setList('default2', JSON.stringify({id: 'default2', name: 'default2', list:["花","火","大","会"]}))
+    await setList('default', JSON.stringify({id: 'default', name: 'Default', list:["鯨"]}))
+    await setList('default2', JSON.stringify({id: 'default2', name: 'Default 2', list:["花","火","大","会"]}))
+    await loadAllData()
   } catch (error) {
       console.error('Error clearing app data.');
   }
@@ -69,16 +70,13 @@ const setDefault = async function() {
 
 
 export default function App() {
+  //setDefault()
   const { data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, loadAllData } = useContext( KanjiListBase );
-  const bgImage = {uri:'https://media.istockphoto.com/id/1316535091/photo/white-background-of-japanese-paper.jpg?s=612x612&w=0&k=20&c=DztkLMm3y7Xtg-CO5WJXtukn-p0NJ8I2b8qo2F9AxcU='}
+  const bgImage = {uri:'https://img.freepik.com/free-photo/white-recycle-paper-texture_1194-6391.jpg?semt=ais_hybrid'}
 
   console.log("context provided:")
   console.log(data)
   
-  useEffect(() => {
-      
-    loadAllData();
-  }, []);
 
   if (loading) {
     console.log('loading')
@@ -102,8 +100,8 @@ export default function App() {
       </Link>
       
       
-      <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, flexDirection: 'row', paddingVertical:20, paddingRight:20,}} 
-      contentContainerStyle={{justifyContent: 'space-between', flexDirection:'row'}}>
+      <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 1, flexDirection: 'row', paddingVertical:20, paddingRight:20,}} 
+      contentContainerStyle={{justifyContent: 'center', flexDirection:'row'}}>
       {(typeof data != 'undefined' && data.length) ? (
           data.map((value, index) => (
             <DeckCard 
@@ -123,7 +121,7 @@ export default function App() {
         <TouchableOpacity style={styles.button2} onPress={() => setCurrent(data.length)}>
           
           <Text style={{color:'white'}}>
-            create deck
+            CREATE NEW DECK
           </Text>
         </TouchableOpacity>
       </Link>
@@ -165,6 +163,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     paddingVertical: 10,
     height: 50,
-    width: 150
+    width: 200
   },
 });

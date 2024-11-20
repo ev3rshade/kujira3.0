@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
+/*import React, { useState, useEffect, useContext, createContext, useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   View,
@@ -35,11 +35,6 @@ const KanjiBox = ({
     
     return (
       <View style={styles.container}>
-          <View style={styles.bottom}>
-          {/*<Button title='Edit'
-                  onPress={handlePress1}
-                  style={styles.button}
-          />*/}
           <Text style={styles.text}> {title} </Text>
           <View style={styles.middle}>
           </View>
@@ -164,4 +159,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Deck;
+export default Deck; */

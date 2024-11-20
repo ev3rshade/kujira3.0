@@ -35,6 +35,7 @@ export const addToStorage = async (id, name, value) => {
       'name': name,
       'value': value,
     }
+    console.log(JSON.stringify(newItem))
     await AsyncStorage.setItem(
       id,
       JSON.stringify(newItem)
@@ -49,7 +50,7 @@ export const addToStorage = async (id, name, value) => {
    /* 
     * */
 export const ListProvider = ({ children }) => {
-    const [data, setData] = useState(getAll())
+    const [data, setData] = useState([])
     const [currentDeck, setCurrentDeck] = useState(null)
     const [loading, setLoading] = useState(true)
     console.log('data: ' + data)
@@ -74,8 +75,26 @@ export const ListProvider = ({ children }) => {
           id,
           JSON.stringify(item)
         )
+        loadAllData()
       } catch (error) {
-        console.log(error);
+        console.log("editStorage: " + error);
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const deleteDeck = async (id) => {
+      try {
+        /*if (JSON.parse(currentDeck)) {
+          setCurrentDeck(JSON.stringify(data[0]))
+        }*/// if statement doesn't work :(
+
+
+        await AsyncStorage.removeItem(id)
+        console.log(currentDeck)
+        loadAllData()
+      } catch (error) {
+        console.log("editStorage: " + error);
       } finally {
         setLoading(false)
       }
@@ -83,7 +102,7 @@ export const ListProvider = ({ children }) => {
 
     const loadAllData = async () => {
       try {
-        const updatedData = await getAll() || []; // Handle null case
+        const updatedData = await getAll() || []
         setData(updatedData)
         setCurrent(currentDeck)
       } catch (error) {
@@ -91,7 +110,7 @@ export const ListProvider = ({ children }) => {
       } finally {
         setLoading(false)
       }
-    };
+    }
   
     useEffect(() => {
       
@@ -99,7 +118,7 @@ export const ListProvider = ({ children }) => {
     }, []);
 
     return (
-        <KanjiListBase.Provider value={{ data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, loadAllData }}>
+        <KanjiListBase.Provider value={{ data, currentDeck, loading, setCurrentDeck, setCurrent, setLoading, editStorage, deleteDeck, loadAllData }}>
             { children }
         </KanjiListBase.Provider>
     )

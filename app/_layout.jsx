@@ -9,6 +9,7 @@ import "../global.css";
 const RootLayout = () => {
     const [fontsLoaded, error] = useFonts({
         "Yuji Syuku": require("../assets/fonts/YujiSyuku-Regular.ttf"),
+        "Courier Prime Regular": require("../assets/fonts/CourierPrime-Regular.ttf")
       });
 
       useEffect(() => {

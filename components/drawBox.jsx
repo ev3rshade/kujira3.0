@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text} from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text, ImageBackground} from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 const { height, width } = Dimensions.get('window');
+const bgImage = {uri:'https://etc.usf.edu/clipart/48600/48667/48667_graph_blank_md.gif'}
 
 function DrawBox (
   {
@@ -39,6 +40,7 @@ function DrawBox (
   return (
     <View style={styles.container}>
       <View style={styles.svgContainer} height={height * scaleHeight} width={width * scaleWidth} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+      <ImageBackground source={bgImage} resizeMode='center' style={{flex:1, justifyContent:'center'}}>
         <Svg height={height * scaleHeight} width={width * scaleWidth}>
           <Path
             d={paths.join('')}
@@ -60,6 +62,7 @@ function DrawBox (
               />
             ))}
         </Svg>
+        </ImageBackground>
       </View>
       <TouchableOpacity style={styles.clearButton} onPress={handleClearButtonClick}>
         <Text style={styles.clearButtonText}>Clear</Text>
